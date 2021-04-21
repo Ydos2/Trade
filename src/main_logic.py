@@ -3,7 +3,6 @@ import sys
 
 
 class Trade:
-    _input = ""
     settings = {}
 
     timebank = 0
@@ -18,47 +17,44 @@ class Trade:
     transaction_fee_percent = 0
 
     _format = {}
-    BTC_stack = 0
-    ETH_stack = 0
-    USDT_stack = 0
-    BTC_ETH_array = [{}]
-    USDT_ETH_array = [{}]
-    USDT_BTC_array = [{}]
-
-    def get_input(self):
-        try:
-            self._input = input()
-        except:
-            exit(0)
+    BTC_money = 0
+    ETH_money = 0
+    USDT_money = 0
+    BTC_ETH_list = [[]]
+    USDT_ETH_list = [[]]
+    USDT_BTC_list = [[]]
 
     def get_settings(self) -> int:
         for _ in range(0, 10):
-            self.get_input()
-            arr = self._input.split(" ")
-            if (arr[0] != "settings" or len(arr) < 3):
-                print("Bad setting : " + self._input, file=sys.stderr)
+            try:
+                input_list = input()
+            except:
                 return 84
-            self.settings[arr[1]] = arr[2]
+            training_list = input_list.split(" ")
+            if (training_list[0] != "settings" or len(training_list) < 3):
+                print("Bad setting : " + input_list, file=sys.stderr)
+                return 84
+            self.settings[training_list[1]] = training_list[2]
         return 0
 
     def set_format(self) -> int:
         good_val = 0
-        candle_arr = ["pair", "date", "high", "low", "open", "close", "volume"]
+        candle_list = ["pair", "date", "high", "low", "open", "close", "volume"]
         self.candle_format = self.candle_format.split(",")
         if (len(self.candle_format) != 7):
             print("Error with candle_format : ",
                   self.candle_format, file=sys.stderr)
             return 84
         for i in self.candle_format:
-            for j in candle_arr:
+            for j in candle_list:
                 if i == j:
                     self._format[j] = good_val
                     good_val = good_val + 1
-                    candle_arr.remove(j)
+                    candle_list.remove(j)
         if (good_val != 7):
-            print("Error with candle_format : ",
-                  self.candle_format, file=sys.stderr)
+            print(f"Error with candle {self.candle_format}", file=sys.stderr)
             return 84
+        return 0
 
     def set_settings(self) -> int:
         try:
@@ -77,58 +73,41 @@ class Trade:
             print("Settings error", file=sys.stderr)
             return 84
         self.set_format()
-
-    def get_info(self, arr, info):
-        return arr[self._format[info]]
+        return 0
 
     def append_candles(self, string):
         arr = string.split(";")
         for i in arr:
             info = i.split(",")
-            if (self.get_info(info, "pair") == "BTC_ETH"):
-                self.BTC_ETH_array[-1]["date"] = float(
-                    self.get_info(info, "date"))
-                self.BTC_ETH_array[-1]["high"] = float(
-                    self.get_info(info, "high"))
-                self.BTC_ETH_array[-1]["low"] = float(
-                    self.get_info(info, "low"))
-                self.BTC_ETH_array[-1]["open"] = float(
-                    self.get_info(info, "open"))
-                self.BTC_ETH_array[-1]["close"] = float(
-                    self.get_info(info, "close"))
-                self.BTC_ETH_array[-1]["volume"] = float(
-                    self.get_info(info, "volume"))
-                self.BTC_ETH_array.append({})
-            if (self.get_info(info, "pair") == "USDT_ETH"):
-                self.USDT_ETH_array[-1]["date"] = float(
-                    self.get_info(info, "date"))
-                self.USDT_ETH_array[-1]["high"] = float(
-                    self.get_info(info, "high"))
-                self.USDT_ETH_array[-1]["low"] = float(
-                    self.get_info(info, "low"))
-                self.USDT_ETH_array[-1]["open"] = float(
-                    self.get_info(info, "open"))
-                self.USDT_ETH_array[-1]["close"] = float(
-                    self.get_info(info, "close"))
-                self.USDT_ETH_array[-1]["volume"] = float(
-                    self.get_info(info, "volume"))
-                self.USDT_ETH_array.append({})
-            if (self.get_info(info, "pair") == "USDT_BTC"):
-                self.USDT_BTC_array[-1]["date"] = float(
-                    self.get_info(info, "date"))
-                self.USDT_BTC_array[-1]["high"] = float(
-                    self.get_info(info, "high"))
-                self.USDT_BTC_array[-1]["low"] = float(
-                    self.get_info(info, "low"))
-                self.USDT_BTC_array[-1]["open"] = float(
-                    self.get_info(info, "open"))
-                self.USDT_BTC_array[-1]["close"] = float(
-                    self.get_info(info, "close"))
-                self.USDT_BTC_array[-1]["volume"] = float(
-                    self.get_info(info, "volume"))
-                self.USDT_BTC_array.append({})
+            if (info[self._format["pair"]] == "BTC_ETH"):
+                self.BTC_ETH_list.append([
+                    float(info[self._format["date"]]),
+                    float(info[self._format["high"]]),
+                    float(info[self._format["low"]]),
+                    float(info[self._format["open"]]),
+                    float(info[self._format["close"]]),
+                    float(info[self._format["volume"]])
+                ])
+            if (info[self._format["pair"]] == "USDT_ETH"):
+                self.USDT_ETH_list.append([
+                    float(info[self._format["date"]]),
+                    float(info[self._format["high"]]),
+                    float(info[self._format["low"]]),
+                    float(info[self._format["open"]]),
+                    float(info[self._format["close"]]),
+                    float(info[self._format["volume"]])
+                ])
+            if (info[self._format["pair"]] == "USDT_BTC"):
+                self.USDT_BTC_list.append([
+                    float(info[self._format["date"]]),
+                    float(info[self._format["high"]]),
+                    float(info[self._format["low"]]),
+                    float(info[self._format["open"]]),
+                    float(info[self._format["close"]]),
+                    float(info[self._format["volume"]])
+                ])
 
-    def set_stack(self, string) -> int:
+    def set_money(self, string) -> int:
         arr = string.split(",")
         if (len(arr) != 3):
             print("Wrong value : " + string, file=sys.stderr)
@@ -137,33 +116,39 @@ class Trade:
             info = i.split(":")
             if (len(info) != 2):
                 return 84
-            elif (info[0] == "BTC"):
+            print(info[0], float(info[1]), file=sys.stderr)
+            if (info[0] == "BTC"):
                 self.BTC_stack = float(info[1])
             elif (info[0] == "ETH"):
                 self.ETH_stack = float(info[1])
             elif (info[0] == "USDT"):
                 self.USDT_stack = float(info[1])
             else:
-                print("Unknow val : " + i, file=sys.stderr)
+                print(f"Money error at {i} itérator", file=sys.stderr)
                 return 84
+        return 0
 
     def order(self, milliseconds):
         print("pass")
 
     def main_loop(self) -> int:
         while (1):
-            self.get_input()
-            arr = self._input.split(" ")
-            if (arr[0] == "update" and arr[1] == "game" and arr[2] == "next_candles"):
-                self.append_candles(arr[3])
-            elif (arr[0] == "update" and arr[1] == "game" and arr[2] == "stacks"):
-                if (self.set_stack(arr[3]) == 84):
-                    print("Error in update !", file=sys.stderr)
+            try:
+                input_list = input()
+            except:
+                return 84
+            training_list = input_list.split(" ")
+            if (training_list[0] == "update" and training_list[1] == "game" and training_list[2] == "next_candles"):
+                self.append_candles(training_list[3])
+            elif (training_list[0] == "update" and training_list[1] == "game" and training_list[2] == "stacks"):
+                if (self.set_money(training_list[3]) == 84):
+                    print("Error in sey money !", file=sys.stderr)
                     return 84
-            elif (arr[0] == "action" and arr[1] == "order"):
-                self.order(float(arr[2]))
+            elif (training_list[0] == "action" and training_list[1] == "order"):
+                self.order(float(training_list[2]))
             else:
-                print("Unknow cmd : " + self._input, file=sys.stderr)
+                print("Unknow cmd : " + input_list, file=sys.stderr)
+        return 0
 
     def start(self) -> int:
         if (self.get_settings() == 84):
