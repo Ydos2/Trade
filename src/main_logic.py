@@ -1,6 +1,7 @@
 import math
 import sys
 
+from .candlestick_japanese import candlestick
 
 class Trade:
     settings = {}
@@ -116,7 +117,7 @@ class Trade:
             info = i.split(":")
             if (len(info) != 2):
                 return 84
-            print(info[0], float(info[1]), file=sys.stderr)
+            #print(info[0], float(info[1]), file=sys.stderr)
             if (info[0] == "BTC"):
                 self.BTC_stack = float(info[1])
             elif (info[0] == "ETH"):
@@ -132,6 +133,8 @@ class Trade:
         print("pass")
 
     def main_loop(self) -> int:
+        candlestick_class = candlestick()
+        index = 0
         while (1):
             try:
                 input_list = input()
@@ -140,6 +143,8 @@ class Trade:
             training_list = input_list.split(" ")
             if (training_list[0] == "update" and training_list[1] == "game" and training_list[2] == "next_candles"):
                 self.append_candles(training_list[3])
+                if index > 4:
+                    candlestick_class.candlestick_japanese(self.BTC_ETH_list, self.USDT_ETH_list, self.USDT_BTC_list)
             elif (training_list[0] == "update" and training_list[1] == "game" and training_list[2] == "stacks"):
                 if (self.set_money(training_list[3]) == 84):
                     print("Error in sey money !", file=sys.stderr)
@@ -148,6 +153,7 @@ class Trade:
                 self.order(float(training_list[2]))
             else:
                 print("Unknow cmd : " + input_list, file=sys.stderr)
+            index += 1
         return 0
 
     def start(self) -> int:
