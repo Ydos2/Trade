@@ -20,9 +20,17 @@ class candlestick:
         return 0
 
     def le_pendu(self, val_list: list) -> int:
+        # Pareil que pour le marteau sauf que le pendu est localisé en haut d'une montée à l'inverse du marteau, qui se situe davantage en bas d'une descente
         return 0
 
     def le_doji(self, val_list: list) -> int:
+        val_high = val_list[2]
+        val_low = val_list[3]
+        val_open = val_list[4]
+        val_close = val_list[5]
+        if (val_open == val_close):
+            print("Doji", file=sys.stderr)
+            return 1
         return 0
 
     def le_marubozu(self, val_list: list) -> int:
