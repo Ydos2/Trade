@@ -16,7 +16,6 @@ class candlestick:
         elif (val_low == val_open and val_high < val_close) or (val_low == val_close and val_high < val_open):
             print("Marteau", file=sys.stderr)
             return 1
-        print("No Marteau", file=sys.stderr)
         return 0
 
     def le_pendu(self, val_list: list) -> int:
@@ -24,8 +23,8 @@ class candlestick:
         return 0
 
     def le_doji(self, val_list: list) -> int:
-        val_high = val_list[2]
-        val_low = val_list[3]
+        #val_high = val_list[2]
+        #val_low = val_list[3]
         val_open = val_list[4]
         val_close = val_list[5]
         if (val_open == val_close):
@@ -34,21 +33,63 @@ class candlestick:
         return 0
 
     def le_marubozu(self, val_list: list) -> int:
+        val_high = val_list[2]
+        val_low = val_list[3]
+        val_open = val_list[4]
+        val_close = val_list[5]
+        if (val_high <= val_close and val_high >= val_open and val_low <= val_close and val_low >= val_open):
+            print("Marubozu", file=sys.stderr)
+            return 1
         return 0
 
     def le_morubozu(self, val_list: list) -> int:
+        val_high = val_list[2]
+        val_low = val_list[3]
+        val_open = val_list[4]
+        val_close = val_list[5]
+        if (val_high >= val_close and val_high <= val_open and val_low >= val_close and val_low <= val_open):
+            print("Morubozu", file=sys.stderr)
+            return -1
         return 0
 
     def opening_yang_bozu(self, val_list: list) -> int:
+        val_high = val_list[2]
+        val_low = val_list[3]
+        val_open = val_list[4]
+        val_close = val_list[5]
+        if (val_high <= val_close and val_high >= val_open and val_low < val_close and val_low < val_open):
+            print("Opening yang bozu", file=sys.stderr)
+            return 1
         return 0
 
     def opening_yin_bozu(self, val_list: list) -> int:
+        val_high = val_list[2]
+        val_low = val_list[3]
+        val_open = val_list[4]
+        val_close = val_list[5]
+        if (val_high >= val_close and val_high <= val_open and val_low > val_close and val_low > val_open):
+            print("Opening yin bozu", file=sys.stderr)
+            return -1
         return 0
 
     def closing_yang_bozu(self, val_list: list) -> int:
+        val_high = val_list[2]
+        val_low = val_list[3]
+        val_open = val_list[4]
+        val_close = val_list[5]
+        if (val_low <= val_close and val_low >= val_open and val_high < val_close and val_high < val_open):
+            print("Closing yang bozu", file=sys.stderr)
+            return 1
         return 0
 
     def closing_yin_bozu(self, val_list: list) -> int:
+        val_high = val_list[2]
+        val_low = val_list[3]
+        val_open = val_list[4]
+        val_close = val_list[5]
+        if (val_low >= val_close and val_low <= val_open and val_high > val_close and val_high > val_open):
+            print("Closing yin bozu", file=sys.stderr)
+            return -1
         return 0
 
     # Les configurations double
@@ -124,7 +165,7 @@ class candlestick:
             indice_usdt += self.les_trois_corbeaux_rouges(USDT_BTC_list[index])
             val_usdt.append(indice_usdt)
             index += 1
-        index = 4
+        index = 0
         for _ in BTC_ETH_list:
             indice_btc = 0
             if index < 4:
@@ -151,7 +192,7 @@ class candlestick:
             indice_btc += self.les_trois_corbeaux_rouges(USDT_BTC_list[index])
             val_btc.append(indice_btc)
             index += 1
-        index = 4
+        index = 0
         for _ in USDT_ETH_list:
             indice_eth = 0
             if index < 4:
