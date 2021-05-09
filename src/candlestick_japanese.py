@@ -6,10 +6,10 @@ class candlestick:
     USDT_BTC_list = [[]]
 
     def le_marteau(self, val_list: list) -> int:
-        val_high = val_list[2]
-        val_low = val_list[3]
-        val_open = val_list[4]
-        val_close = val_list[5]
+        val_high = val_list[1]
+        val_low = val_list[2]
+        val_open = val_list[3]
+        val_close = val_list[4]
         if (val_high == val_open and val_low < val_close) or (val_high == val_close and val_low < val_open):
             print("Marteau", file=sys.stderr)
             return 1
@@ -23,71 +23,78 @@ class candlestick:
         return 0
 
     def le_doji(self, val_list: list) -> int:
-        #val_high = val_list[2]
-        #val_low = val_list[3]
-        val_open = val_list[4]
-        val_close = val_list[5]
+        #val_high = val_list[1]
+        #val_low = val_list[2]
+        val_open = val_list[3]
+        val_close = val_list[4]
         if (val_open == val_close):
             print("Doji", file=sys.stderr)
             return 1
         return 0
 
     def le_marubozu(self, val_list: list) -> int:
-        val_high = val_list[2]
-        val_low = val_list[3]
-        val_open = val_list[4]
-        val_close = val_list[5]
+        val_high = val_list[1]
+        val_low = val_list[2]
+        val_open = val_list[3]
+        val_close = val_list[4]
         if (val_high <= val_close and val_high >= val_open and val_low <= val_close and val_low >= val_open):
             print("Marubozu", file=sys.stderr)
             return 1
         return 0
 
     def le_morubozu(self, val_list: list) -> int:
-        val_high = val_list[2]
-        val_low = val_list[3]
-        val_open = val_list[4]
-        val_close = val_list[5]
+        val_high = val_list[1]
+        val_low = val_list[2]
+        val_open = val_list[3]
+        val_close = val_list[4]
         if (val_high >= val_close and val_high <= val_open and val_low >= val_close and val_low <= val_open):
             print("Morubozu", file=sys.stderr)
             return -1
         return 0
 
     def opening_yang_bozu(self, val_list: list) -> int:
-        val_high = val_list[2]
-        val_low = val_list[3]
-        val_open = val_list[4]
-        val_close = val_list[5]
+        val_high = val_list[1]
+        val_low = val_list[2]
+        val_open = val_list[3]
+        val_close = val_list[4]
         if (val_high <= val_close and val_high >= val_open and val_low < val_close and val_low < val_open):
             print("Opening yang bozu", file=sys.stderr)
             return 1
         return 0
 
     def opening_yin_bozu(self, val_list: list) -> int:
-        val_high = val_list[2]
-        val_low = val_list[3]
-        val_open = val_list[4]
-        val_close = val_list[5]
+        val_high = val_list[1]
+        val_low = val_list[2]
+        val_open = val_list[3]
+        val_close = val_list[4]
         if (val_high >= val_close and val_high <= val_open and val_low > val_close and val_low > val_open):
             print("Opening yin bozu", file=sys.stderr)
             return -1
         return 0
 
     def closing_yang_bozu(self, val_list: list) -> int:
-        val_high = val_list[2]
-        val_low = val_list[3]
-        val_open = val_list[4]
-        val_close = val_list[5]
-        if (val_low <= val_close and val_low >= val_open and val_high < val_close and val_high < val_open):
+        val_high = val_list[1]
+        val_low = val_list[2]
+        val_open = val_list[3]
+        val_close = val_list[4]
+        #print(f"ici {val_list}", file=sys.stderr)
+        #print(f"high {val_list[1]}", file=sys.stderr)
+        #print(f"low {val_list[2]}", file=sys.stderr)
+        #print(f"open {val_list[3]}", file=sys.stderr)
+        #print(f"close {val_list[4]}", file=sys.stderr)
+        #print(f"", file=sys.stderr)
+        #if (val_low >= val_close and val_low >= val_open and val_high < val_close and val_high < val_open and val_open < val_close):
+        if (val_open < val_close):
             print("Closing yang bozu", file=sys.stderr)
             return 1
         return 0
 
     def closing_yin_bozu(self, val_list: list) -> int:
-        val_high = val_list[2]
-        val_low = val_list[3]
-        val_open = val_list[4]
-        val_close = val_list[5]
-        if (val_low >= val_close and val_low <= val_open and val_high > val_close and val_high > val_open):
+        val_high = val_list[1]
+        val_low = val_list[2]
+        val_open = val_list[3]
+        val_close = val_list[4]
+        if (val_open > val_close):
             print("Closing yin bozu", file=sys.stderr)
             return -1
         return 0
@@ -143,7 +150,7 @@ class candlestick:
                 #print(f"ici {USDT_BTC_list}", file=sys.stderr)
                 index += 1
                 continue
-            self.le_marteau(USDT_BTC_list[index])
+            #print(f"la {USDT_BTC_list[index]}", file=sys.stderr)
             indice_usdt += self.le_marteau(USDT_BTC_list[index])
             indice_usdt += self.le_pendu(USDT_BTC_list[index])
             indice_usdt += self.le_doji(USDT_BTC_list[index])

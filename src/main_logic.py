@@ -1,7 +1,20 @@
 import math
+import statistics
 import sys
 
 from .candlestick_japanese import candlestick
+
+def getmiddleBB(arr, period):
+	new_list = arr[-period:]
+	return (statistics.mean(new_list))
+
+def getStandartDeviation(arr, period):
+	newList = arr[-period:]
+	mean = statistics.mean(newList)
+	deviationSum = 0
+	for i in newList:
+		deviationSum += (abs(i - mean))**2
+	return (math.sqrt(deviationSum / period))
 
 class Trade:
     settings = {}
@@ -25,6 +38,11 @@ class Trade:
     USDT_ETH_list = [[]]
     USDT_BTC_list = [[]]
 
+    sell = 0
+    type_sell = 0
+    buy = 0
+    type_buy = 0
+
     def get_settings(self) -> int:
         for _ in range(0, 10):
             try:
@@ -40,7 +58,8 @@ class Trade:
 
     def set_format(self) -> int:
         good_val = 0
-        candle_list = ["pair", "date", "high", "low", "open", "close", "volume"]
+        candle_list = ["pair", "date", "high",
+            "low", "open", "close", "volume"]
         self.candle_format = self.candle_format.split(",")
         if (len(self.candle_format) != 7):
             print("Error with candle_format : ",
@@ -117,20 +136,44 @@ class Trade:
             info = i.split(":")
             if (len(info) != 2):
                 return 84
-            #print(info[0], float(info[1]), file=sys.stderr)
+            # print(info[0], float(info[1]), file=sys.stderr)
             if (info[0] == "BTC"):
-                self.BTC_stack = float(info[1])
+                self.BTC_money = float(info[1])
             elif (info[0] == "ETH"):
-                self.ETH_stack = float(info[1])
+                self.ETH_money = float(info[1])
             elif (info[0] == "USDT"):
-                self.USDT_stack = float(info[1])
+                self.USDT_money = float(info[1])
             else:
                 print(f"Money error at {i} itérator", file=sys.stderr)
                 return 84
         return 0
 
-    def order(self, milliseconds):
-        print("pass")
+
+    def go_buy(self, name_money: str, money_actu: int, sell_money_actu: int, hasBought: bool) -> bool:
+        if (money_actu > self.buy and self.buy > 0.001):
+            if (hasBought):
+                print(";", end='')
+            print("buy " + name_money + " " + str(self.buy), end='')
+            return (True)
+        elif (sell_money_actu > self.sell and self.sell > 0.5):
+            if (hasBought):
+                print(";", end='')
+            print("sell " + name_money + " " + str(self.sell), end='')
+            print("should sell !", file=sys.stderr)
+            return (True)
+        return (False)
+
+    def set_action(self, milliseconds):
+        if (self.go_buy("USDT_ETH", self.USDT_money / self.USDT_ETH_list[-2]["close"], self.ETH_money, False) == True):
+            isBuy = True
+        if (self.go_buy("BTC_ETH", self.BTC_money / self.BTC_ETH_list[-2]["close"], self.ETH_money, isBuy) == True):
+            isBuy = True
+        if (self.go_buy("USDT_BTC", self.USDT_money / self.USDT_BTC_list[-2]["close"], self.BTC_money, isBuy) == True):
+            isBuy = True
+        if (isBuy):
+            print("")
+        else:
+            print("pass")
 
     def main_loop(self) -> int:
         candlestick_class = candlestick()
@@ -150,7 +193,7 @@ class Trade:
                     print("Error in sey money !", file=sys.stderr)
                     return 84
             elif (training_list[0] == "action" and training_list[1] == "order"):
-                self.order(float(training_list[2]))
+                self.set_action(float(training_list[2]))
             else:
                 print("Unknow cmd : " + input_list, file=sys.stderr)
             index += 1
