@@ -29,6 +29,7 @@ class Trade:
     initial_stack = 0
     candle_format = ""
     transaction_fee_percent = 0
+    period = 10
 
     _format = {}
     BTC_money = 0
@@ -95,6 +96,27 @@ class Trade:
         self.set_format()
         return 0
 
+    def last_relative_evolution(self, tab):
+        val = ((tab[len(tab) - 2][5] - tab[len(tab) - 2 - self.period][5]) /
+                tab[len(tab) - 2 - self.period][5]) * 100
+        return val
+
+    def actual_relative_evolution(self, tab):
+        val = ((tab[len(tab) - 1][5] - tab[len(tab) - 1 - self.period][5]) /
+                tab[len(tab) - 1 - self.period][5]) * 100
+        return val
+
+    def is_occur(self, tab):
+        if (len(tab) < self.period + 2):
+            return 0
+        if (tab[len(tab) - 1 - self.period][5] == 0 or tab[len(tab) - 2 - self.period][5] == 0):
+            return 0
+        x = self.actual_relative_evolution(tab)
+        y = self.last_relative_evolution(tab)
+        if ((x  >= 0 and y < 0) or (x < 0 and y >= 0)):
+            return 1
+        return 0
+
     def append_candles(self, string):
         arr = string.split(";")
         for i in arr:
@@ -108,6 +130,8 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
+                if (self.is_occur(self.BTC_ETH_list)):
+                    print("BTC switch occurs !")
             if (info[self._format["pair"]] == "USDT_ETH"):
                 self.USDT_ETH_list.append([
                     float(info[self._format["date"]]),
@@ -117,6 +141,8 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
+                if (self.is_occur(self.USDT_ETH_list)):
+                    print("ETH switch occurs !")
             if (info[self._format["pair"]] == "USDT_BTC"):
                 self.USDT_BTC_list.append([
                     float(info[self._format["date"]]),
@@ -126,6 +152,8 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
+                if (self.is_occur(self.USDT_BTC_list)):
+                    print("USDT switch occurs !")
 
     def set_money(self, string) -> int:
         arr = string.split(",")
