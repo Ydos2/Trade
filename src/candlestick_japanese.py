@@ -1,9 +1,12 @@
 import sys
 
+
 class candlestick:
     BTC_ETH_list = [[]]
     USDT_ETH_list = [[]]
     USDT_BTC_list = [[]]
+
+    actions_day = [[[]]]
 
     def le_marteau(self, val_list: list) -> int:
         val_high = val_list[1]
@@ -83,7 +86,7 @@ class candlestick:
         #print(f"open {val_list[3]}", file=sys.stderr)
         #print(f"close {val_list[4]}", file=sys.stderr)
         #print(f"", file=sys.stderr)
-        #if (val_low >= val_close and val_low >= val_open and val_high < val_close and val_high < val_open and val_open < val_close):
+        # if (val_low >= val_close and val_low >= val_open and val_high < val_close and val_high < val_open and val_open < val_close):
         if (val_open < val_close):
             print("Closing yang bozu", file=sys.stderr)
             return 1
@@ -130,10 +133,38 @@ class candlestick:
     def les_trois_corbeaux_rouges(self, val_list: list) -> int:
         return 0
 
+#actions = [[0, 0, 0]]
     def can_trade(self, val_usdt: list, val_btc: list, val_eth: list):
+        actions = [[]]
+        for val in val_usdt:
+            if val > 0:
+                action = [1, 0, 0]
+            else:
+                action = [0, 0, 0]
+            actions.append(action)
+        self.actions_day.append(actions)
+
+        actions = [[]]
+        for val in val_btc:
+            if val > 0:
+                action = [0, 1, 0]
+            else:
+                action = [0, 0, 0]
+            actions.append(action)
+        self.actions_day.append(actions)
+
+        actions = [[]]
+        for val in val_eth:
+            if val > 0:
+                action = [0, 0, 1]
+            else:
+                action = [0, 0, 0]
+            actions.append(action)
+        self.actions_day.append(actions)
+
         return 0
 
-    def candlestick_japanese(self, BTC_ETH_list: list, USDT_ETH_list: list, USDT_BTC_list: list) -> int:
+    def candlestick_japanese(self, BTC_ETH_list: list, USDT_ETH_list: list, USDT_BTC_list: list) -> actions_day:
         self.BTC_ETH_list = BTC_ETH_list
         self.USDT_ETH_list = USDT_ETH_list
         self.USDT_BTC_list = USDT_BTC_list
