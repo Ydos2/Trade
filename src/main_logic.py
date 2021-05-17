@@ -93,7 +93,7 @@ class Trade:
         return val
 
     def is_occur(self, tab):
-        if (len(tab) < self.period + 2):
+        if (len(tab) < self.period + 3):
             return 0
         if (tab[len(tab) - 1 - self.period][5] == 0 or tab[len(tab) - 2 - self.period][5] == 0):
             return 0
@@ -117,7 +117,7 @@ class Trade:
                     float(info[self._format["volume"]])
                 ])
                 if (self.is_occur(self.BTC_ETH_list)):
-                    print("BTC switch occurs !")
+                    print("BTC switch occurs !", file=sys.stderr)
             if (info[self._format["pair"]] == "USDT_ETH"):
                 self.USDT_ETH_list.append([
                     float(info[self._format["date"]]),
@@ -128,7 +128,7 @@ class Trade:
                     float(info[self._format["volume"]])
                 ])
                 if (self.is_occur(self.USDT_ETH_list)):
-                    print("ETH switch occurs !")
+                    print("ETH switch occurs !", file=sys.stderr)
             if (info[self._format["pair"]] == "USDT_BTC"):
                 self.USDT_BTC_list.append([
                     float(info[self._format["date"]]),
@@ -139,8 +139,7 @@ class Trade:
                     float(info[self._format["volume"]])
                 ])
                 if (self.is_occur(self.USDT_BTC_list)):
-                    print("USDT switch occurs !")
-
+                    print("USDT switch occurs !", file=sys.stderr)
     def set_money(self, string) -> int:
         arr = string.split(",")
         if (len(arr) != 3):

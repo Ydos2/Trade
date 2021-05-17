@@ -61,7 +61,7 @@ class candlestick:
         val_open = val_list[3]
         val_close = val_list[4]
         if (val_high <= val_close and val_high >= val_open and val_low < val_close and val_low < val_open):
-            print("Opening yang bozu", file=sys.stderr)
+            #print("Opening yang bozu", file=sys.stderr)
             return 1
         return 0
 
@@ -71,7 +71,7 @@ class candlestick:
         val_open = val_list[3]
         val_close = val_list[4]
         if (val_high >= val_close and val_high <= val_open and val_low > val_close and val_low > val_open):
-            print("Opening yin bozu", file=sys.stderr)
+            #print("Opening yin bozu", file=sys.stderr)
             return -1
         return 0
 
@@ -88,7 +88,7 @@ class candlestick:
         #print(f"", file=sys.stderr)
         # if (val_low >= val_close and val_low >= val_open and val_high < val_close and val_high < val_open and val_open < val_close):
         if (val_open < val_close):
-            print("Closing yang bozu", file=sys.stderr)
+            #print("Closing yang bozu", file=sys.stderr)
             return 1
         return 0
 
@@ -98,7 +98,7 @@ class candlestick:
         val_open = val_list[3]
         val_close = val_list[4]
         if (val_open > val_close):
-            print("Closing yin bozu", file=sys.stderr)
+            #print("Closing yin bozu", file=sys.stderr)
             return -1
         return 0
 
@@ -133,34 +133,33 @@ class candlestick:
     def les_trois_corbeaux_rouges(self, val_list: list) -> int:
         return 0
 
-#actions = [[0, 0, 0]]
     def can_trade(self, val_usdt: list, val_btc: list, val_eth: list):
-        actions = [[]]
+        moyenne = 0
+        i = 0
         for val in val_usdt:
-            if val > 0:
-                action = [1, 0, 0]
-            else:
-                action = [0, 0, 0]
-            actions.append(action)
-        self.actions_day.append(actions)
-
-        actions = [[]]
+            if i >= (len(val_usdt) - 7):
+                if val > 0:
+                    moyenne += 1
+            i += 1
+        self.actions_day.append(moyenne)
+        
+        moyenne = 0
+        i = 0
         for val in val_btc:
-            if val > 0:
-                action = [0, 1, 0]
-            else:
-                action = [0, 0, 0]
-            actions.append(action)
-        self.actions_day.append(actions)
+            if i >= (len(val_btc) - 7):
+                if val > 0:
+                    moyenne += 1
+            i += 1
+        self.actions_day.append(moyenne)
 
-        actions = [[]]
+        moyenne = 0
+        i = 0
         for val in val_eth:
-            if val > 0:
-                action = [0, 0, 1]
-            else:
-                action = [0, 0, 0]
-            actions.append(action)
-        self.actions_day.append(actions)
+            if i >= (len(val_eth) - 7):
+                if val > 0:
+                    moyenne += 1
+            i += 1
+        self.actions_day.append(moyenne)
 
         return 0
 
