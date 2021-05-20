@@ -116,8 +116,8 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
-                if (self.is_occur(self.BTC_ETH_list)):
-                    print("BTC switch occurs !", file=sys.stderr)
+                #if (self.is_occur(self.BTC_ETH_list)):
+                #    print("BTC switch occurs !", file=sys.stderr)
             if (info[self._format["pair"]] == "USDT_ETH"):
                 self.USDT_ETH_list.append([
                     float(info[self._format["date"]]),
@@ -127,8 +127,8 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
-                if (self.is_occur(self.USDT_ETH_list)):
-                    print("ETH switch occurs !", file=sys.stderr)
+                #if (self.is_occur(self.USDT_ETH_list)):
+                #    print("ETH switch occurs !", file=sys.stderr)
             if (info[self._format["pair"]] == "USDT_BTC"):
                 self.USDT_BTC_list.append([
                     float(info[self._format["date"]]),
@@ -138,8 +138,8 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
-                if (self.is_occur(self.USDT_BTC_list)):
-                    print("USDT switch occurs !", file=sys.stderr)
+                #if (self.is_occur(self.USDT_BTC_list)):
+                #    print("USDT switch occurs !", file=sys.stderr)
     def set_money(self, string) -> int:
         arr = string.split(",")
         if (len(arr) != 3):
@@ -165,30 +165,55 @@ class Trade:
         if (money_actu >= self.buy[type_money] and self.buy[type_money] > 0.001):
             if (hasBought):
                 print(";", end='')
-            print("buy " + name_money + " " +
-                  str(self.buy[type_money]), end='')
+            print("buy " + name_money + " " + str(self.buy[type_money]), end='')
+            print("should buy !", file=sys.stderr)
+            self.buy[type_money] = 0
             return (True)
         elif (self.buy[type_money] < 0):
-            self.buy[0] = 0
             if (hasBought):
                 print(";", end='')
-            print("sell " + name_money + " " +
-                  str(self.buy[type_money]), end='')
+            print("sell " + name_money + " " + str(self.buy[type_money]), end='')
             print("should sell !", file=sys.stderr)
+            self.buy[type_money] = 0
             return (True)
         return (False)
 
     def set_action(self, milliseconds):
-        if (self.go_buy("USDT_ETH", self.USDT_money / self.USDT_ETH_list[-2]["close"], False, 0) == True):
+        isBuy = False
+        if (self.go_buy("USDT_ETH", self.USDT_money, False, 0) == True):
             isBuy = True
-        if (self.go_buy("BTC_ETH", self.BTC_money / self.BTC_ETH_list[-2]["close"], isBuy, 1) == True):
+        if (self.go_buy("BTC_ETH", self.BTC_money, isBuy, 1) == True):
             isBuy = True
-        if (self.go_buy("USDT_BTC", self.USDT_money / self.USDT_BTC_list[-2]["close"], isBuy, 2) == True):
+        if (self.go_buy("USDT_BTC", self.USDT_money, isBuy, 2) == True):
             isBuy = True
         if (isBuy):
             print("")
+            print("Buy today !", file=sys.stderr)
         else:
             print("pass")
+            print("Pass to another day !", file=sys.stderr)
+
+    def set_buy(self, action: list):
+        if (action[0] > 5):
+            self.buy[0] = 0.5
+        elif (action[0] < 0):
+            self.buy[0] = -0.5
+        else:
+            self.buy[0] = 0
+
+        if (action[1] > 5):
+            self.buy[1] = 0.5
+        elif (action[1] < 0):
+            self.buy[1] = -0.5
+        else:
+            self.buy[1] = 0
+
+        if (action[2] > 5):
+            self.buy[2] = 0.5
+        elif (action[2] < 0):
+            self.buy[2] = -0.5
+        else:
+            self.buy[2] = 0
 
     def main_loop(self) -> int:
         candlestick_class = candlestick()
@@ -199,11 +224,12 @@ class Trade:
             except:
                 return 84
             training_list = input_list.split(" ")
+            print("Command : " + input_list, file=sys.stderr)
             if (training_list[0] == "update" and training_list[1] == "game" and training_list[2] == "next_candles"):
                 self.append_candles(training_list[3])
                 if index > 4:
-                    candlestick_class.candlestick_japanese(
-                        self.BTC_ETH_list, self.USDT_ETH_list, self.USDT_BTC_list)
+                    action = candlestick_class.candlestick_japanese(self.BTC_ETH_list, self.USDT_ETH_list, self.USDT_BTC_list)
+                    self.set_buy(action)
             elif (training_list[0] == "update" and training_list[1] == "game" and training_list[2] == "stacks"):
                 if (self.set_money(training_list[3]) == 84):
                     print("Error in sey money !", file=sys.stderr)

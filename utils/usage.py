@@ -2,7 +2,7 @@ import sys
 import os
 
 
-def usage():
+def usage() -> None:
     print("SYNOPSIS\n"
           "    ./groundhog period\n\n"
           "DESCRIPTION\n"

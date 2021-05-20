@@ -6,7 +6,7 @@ class candlestick:
     USDT_ETH_list = [[]]
     USDT_BTC_list = [[]]
 
-    actions_day = [[[]]]
+    actions_day = []
 
     def le_marteau(self, val_list: list) -> int:
         val_high = val_list[1]
@@ -167,6 +167,7 @@ class candlestick:
         self.BTC_ETH_list = BTC_ETH_list
         self.USDT_ETH_list = USDT_ETH_list
         self.USDT_BTC_list = USDT_BTC_list
+        self.actions_day.clear()
 
         val_usdt = []
         val_btc = []
@@ -258,4 +259,4 @@ class candlestick:
             index += 1
         index = 4
         self.can_trade(val_usdt, val_btc, val_eth)
-        return 0
+        return self.actions_day
