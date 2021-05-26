@@ -4,6 +4,8 @@ import sys
 
 from .candlestick_japanese import candlestick
 
+from .bollinger import sma, upper_bb, lower_bb
+
 
 class Trade:
     settings = {}
@@ -46,7 +48,8 @@ class Trade:
     def set_format(self) -> int:
         good_val = 0
         candle_list = ["pair", "date", "high",
-                       "low", "open", "close", "volume"]
+                       "low", "open", "close", "volume",
+                       "sma", "upper_bb", "lower_bb"]
         self.candle_format = self.candle_format.split(",")
         if (len(self.candle_format) != 7):
             print("Error with candle_format : ",
@@ -116,6 +119,14 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
+                if (len(self.BTC_ETH_list) > self.period):
+                    self.BTC_ETH_list[6].append(sma(self.BTC_ETH_list[5], self.period))
+                    self.BTC_ETH_list[7].append(upper_bb(self.BTC_ETH_list[5], sma(self.BTC_ETH_list[5], self.period), self.period))
+                    self.BTC_ETH_list[8].append(lower_bb(self.BTC_ETH_list[5], sma(self.BTC_ETH_list[5], self.period), self.period))
+                else:
+                    self.BTC_ETH_list[6].append(0.0)
+                    self.BTC_ETH_list[7].append(0.0)
+                    self.BTC_ETH_list[8].append(0.0)
                 #if (self.is_occur(self.BTC_ETH_list)):
                 #    print("BTC switch occurs !", file=sys.stderr)
             if (info[self._format["pair"]] == "USDT_ETH"):
@@ -127,6 +138,14 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
+                if (len(self.USDT_ETH_list) > self.period):
+                    self.USDT_ETH_list[6].append(sma(self.USDT_ETH_list[5], self.period))
+                    self.USDT_ETH_list[7].append(upper_bb(self.USDT_ETH_list[5], sma(self.USDT_ETH_list[5], self.period), self.period))
+                    self.USDT_ETH_list[8].append(lower_bb(self.USDT_ETH_list[5], sma(self.USDT_ETH_list[5], self.period), self.period))
+                else:
+                    self.USDT_ETH_list[6].append(0.0)
+                    self.USDT_ETH_list[7].append(0.0)
+                    self.USDT_ETH_list[8].append(0.0)
                 #if (self.is_occur(self.USDT_ETH_list)):
                 #    print("ETH switch occurs !", file=sys.stderr)
             if (info[self._format["pair"]] == "USDT_BTC"):
@@ -138,6 +157,14 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
+                if (len(self.USDT_BTC_list) > self.period):
+                    self.USDT_BTC_list[6].append(sma(self.USDT_BTC_list[5], self.period))
+                    self.USDT_BTC_list[7].append(upper_bb(self.USDT_BTC_list[5], sma(self.USDT_BTC_list[5], self.period), self.period))
+                    self.USDT_BTC_list[8].append(lower_bb(self.USDT_BTC_list[5], sma(self.USDT_BTC_list[5], self.period), self.period))
+                else:
+                    self.USDT_BTC_list[6].append(0.0)
+                    self.USDT_BTC_list[7].append(0.0)
+                    self.USDT_BTC_list[8].append(0.0)
                 #if (self.is_occur(self.USDT_BTC_list)):
                 #    print("USDT switch occurs !", file=sys.stderr)
     def set_money(self, string) -> int:
