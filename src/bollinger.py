@@ -1,6 +1,6 @@
 import requests
 import math
-import numpy as np
+#import numpy as np
 
 def sma(data, window):
     sma = data.rolling(window = window).mean()

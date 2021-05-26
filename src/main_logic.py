@@ -123,10 +123,11 @@ class Trade:
                     self.BTC_ETH_list[6].append(sma(self.BTC_ETH_list[5], self.period))
                     self.BTC_ETH_list[7].append(upper_bb(self.BTC_ETH_list[5], sma(self.BTC_ETH_list[5], self.period), self.period))
                     self.BTC_ETH_list[8].append(lower_bb(self.BTC_ETH_list[5], sma(self.BTC_ETH_list[5], self.period), self.period))
-                else:
+                elif (len(self.BTC_ETH_list) > 8):
                     self.BTC_ETH_list[6].append(0.0)
                     self.BTC_ETH_list[7].append(0.0)
                     self.BTC_ETH_list[8].append(0.0)
+
                 #if (self.is_occur(self.BTC_ETH_list)):
                 #    print("BTC switch occurs !", file=sys.stderr)
             if (info[self._format["pair"]] == "USDT_ETH"):
@@ -142,7 +143,7 @@ class Trade:
                     self.USDT_ETH_list[6].append(sma(self.USDT_ETH_list[5], self.period))
                     self.USDT_ETH_list[7].append(upper_bb(self.USDT_ETH_list[5], sma(self.USDT_ETH_list[5], self.period), self.period))
                     self.USDT_ETH_list[8].append(lower_bb(self.USDT_ETH_list[5], sma(self.USDT_ETH_list[5], self.period), self.period))
-                else:
+                elif (len(self.BTC_ETH_list) > 8):
                     self.USDT_ETH_list[6].append(0.0)
                     self.USDT_ETH_list[7].append(0.0)
                     self.USDT_ETH_list[8].append(0.0)
@@ -161,7 +162,7 @@ class Trade:
                     self.USDT_BTC_list[6].append(sma(self.USDT_BTC_list[5], self.period))
                     self.USDT_BTC_list[7].append(upper_bb(self.USDT_BTC_list[5], sma(self.USDT_BTC_list[5], self.period), self.period))
                     self.USDT_BTC_list[8].append(lower_bb(self.USDT_BTC_list[5], sma(self.USDT_BTC_list[5], self.period), self.period))
-                else:
+                elif (len(self.BTC_ETH_list) > 8):
                     self.USDT_BTC_list[6].append(0.0)
                     self.USDT_BTC_list[7].append(0.0)
                     self.USDT_BTC_list[8].append(0.0)
