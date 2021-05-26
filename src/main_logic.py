@@ -194,21 +194,21 @@ class Trade:
             print("Pass to another day !", file=sys.stderr)
 
     def set_buy(self, action: list):
-        if (action[0] > 5):
+        if (action[0] > 6):
             self.buy[0] = 0.5
         elif (action[0] < 0):
             self.buy[0] = -0.5
         else:
             self.buy[0] = 0
 
-        if (action[1] > 5):
+        if (action[1] > 6):
             self.buy[1] = 0.5
         elif (action[1] < 0):
             self.buy[1] = -0.5
         else:
             self.buy[1] = 0
 
-        if (action[2] > 5):
+        if (action[2] > 6):
             self.buy[2] = 0.5
         elif (action[2] < 0):
             self.buy[2] = -0.5
