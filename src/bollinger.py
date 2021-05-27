@@ -1,5 +1,6 @@
 import requests
 import math
+import sys
 #import numpy as np
 
 def sma(data, window):
