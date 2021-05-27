@@ -30,6 +30,24 @@ class Trade:
     USDT_ETH_list = [[]]
     USDT_BTC_list = [[]]
 
+    # BTC_bb[0] = volumes
+    # BTC_bb[1] = SMA
+    # BTC_bb[2] = upper_bb
+    # BTC_bb[3] = lower_bb
+    BTC_bb = [[]]
+
+    # ETH_bb[0] = volumes
+    # ETH_bb[1] = SMA
+    # ETH_bb[2] = upper_bb
+    # ETH_bb[3] = lower_bb
+    ETH_bb = [[]]
+
+    # USDT_bb[0] = volumes
+    # USDT_bb[1] = SMA
+    # USDT_bb[2] = upper_bb
+    # USDT_bb[3] = lower_bb
+    USDT_bb = [[]]
+
     buy = [0, 0, 0]
 
     def get_settings(self) -> int:
@@ -118,14 +136,23 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
-                if (len(self.BTC_ETH_list) > self.period):
-                    self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(sma(self.BTC_ETH_list[5], self.period))
-                    self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(upper_bb(self.BTC_ETH_list[5], sma(self.BTC_ETH_list[5], self.period), self.period))
-                    self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(lower_bb(self.BTC_ETH_list[5], sma(self.BTC_ETH_list[5], self.period), self.period))
+                self.BTC_bb[0].append(info[self._format["volume"]])
+                if (len(self.BTC_bb[0]) > self.period):
+                    self.BTC_bb[1].append(sma(self.BTC_bb[0], self.period))
+                    self.BTC_bb[2].append(upper_bb(self.BTC_bb[0], self.BTC_bb[1][len(self.BTC_bb[1] - 1)], self.period))
+                    self.BTC_bb[3].append(lower_bb(self.BTC_bb[0], self.BTC_bb[1][len(self.BTC_bb[1] - 1)], self.period))
                 else:
-                    self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(0.0)
-                    self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(0.0)
-                    self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(0.0)
+                    self.BTC_bb[1].append(0.0)
+                    self.BTC_bb[2].append(0.0)
+                    self.BTC_bb[3].append(0.0)
+                # if (len(self.BTC_ETH_list) > self.period):
+                #     self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(sma(self.BTC_ETH_list[5], self.period))
+                #     self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(upper_bb(self.BTC_ETH_list[5], sma(self.BTC_ETH_list[5], self.period), self.period))
+                #     self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(lower_bb(self.BTC_ETH_list[5], sma(self.BTC_ETH_list[5], self.period), self.period))
+                # else:
+                #     self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(0.0)
+                #     self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(0.0)
+                #     self.BTC_ETH_list[len(self.BTC_ETH_list) - 1].append(0.0)
 
                 #if (self.is_occur(self.BTC_ETH_list)):
                 #    print("BTC switch occurs !", file=sys.stderr)
@@ -138,14 +165,15 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
-                if (len(self.USDT_ETH_list) > self.period):
-                    self.USDT_ETH_list[len(self.USDT_ETH_list) - 1].append(sma(self.USDT_ETH_list[5], self.period))
-                    self.USDT_ETH_list[len(self.USDT_ETH_list) - 1].append(upper_bb(self.USDT_ETH_list[5], sma(self.USDT_ETH_list[5], self.period), self.period))
-                    self.USDT_ETH_list[len(self.USDT_ETH_list) - 1].append(lower_bb(self.USDT_ETH_list[5], sma(self.USDT_ETH_list[5], self.period), self.period))
+                self.ETH_bb[0].append(info[self._format["volume"]])
+                if (len(self.ETH_bb[0]) > self.period):
+                    self.ETH_bb[1].append(sma(self.ETH_bb[0], self.period))
+                    self.ETH_bb[2].append(upper_bb(self.ETH_bb[0], self.ETH_bb[1][len(self.ETH_bb[1] - 1)], self.period))
+                    self.ETH_bb[3].append(lower_bb(self.ETH_bb[0], self.ETH_bb[1][len(self.ETH_bb[1] - 1)], self.period))
                 else:
-                    self.USDT_ETH_list[len(self.USDT_ETH_list) - 1].append(0.0)
-                    self.USDT_ETH_list[len(self.USDT_ETH_list) - 1].append(0.0)
-                    self.USDT_ETH_list[len(self.USDT_ETH_list) - 1].append(0.0)
+                    self.ETH_bb[1].append(0.0)
+                    self.ETH_bb[2].append(0.0)
+                    self.ETH_bb[3].append(0.0)
                 #if (self.is_occur(self.USDT_ETH_list)):
                 #    print("ETH switch occurs !", file=sys.stderr)
             if (info[self._format["pair"]] == "USDT_BTC"):
@@ -157,16 +185,15 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
-                if (len(self.USDT_BTC_list) > self.period):
-                    self.USDT_BTC_list[len(self.USDT_BTC_list) - 1].append(sma(self.USDT_BTC_list[len(self.USDT_BTC_list) - 4], self.period))
-                    self.USDT_BTC_list[len(self.USDT_BTC_list) - 1].append(upper_bb(self.USDT_BTC_list[len(self.USDT_BTC_list) - 4], sma(self.USDT_BTC_list[len(self.USDT_BTC_list) - 4], self.period), self.period))
-                    self.USDT_BTC_list[len(self.USDT_BTC_list) - 1].append(lower_bb(self.USDT_BTC_list[len(self.USDT_BTC_list) - 4], sma(self.USDT_BTC_list[len(self.USDT_BTC_list) - 4], self.period), self.period))
-                    print(f"1 = {sma(self.USDT_BTC_list[len(self.USDT_BTC_list) - 4], self.period)}, 2 = {upper_bb(self.USDT_BTC_list[len(self.USDT_BTC_list) - 4], sma(self.USDT_BTC_list[len(self.USDT_BTC_list) - 4], self.period), self.period)}, 3 = {upper_bb(self.USDT_BTC_list[len(self.USDT_BTC_list) - 4], sma(self.USDT_BTC_list[len(self.USDT_BTC_list) - 4], self.period), self.period)}", file=sys.stderr)
+                self.USDT_bb[0].append(info[self._format["volume"]])
+                if (len(self.USDT_bb[0]) > self.period):
+                    self.USDT_bb[1].append(sma(self.USDT_bb[0], self.period))
+                    self.USDT_bb[2].append(upper_bb(self.USDT_bb[0], self.USDT_bb[1][len(self.USDT_bb[1] - 1)], self.period))
+                    self.USDT_bb[3].append(lower_bb(self.USDT_bb[0], self.USDT_bb[1][len(self.USDT_bb[1] - 1)], self.period))
                 else:
-                    self.USDT_BTC_list[len(self.USDT_BTC_list) - 1].append(0.0)
-                    self.USDT_BTC_list[len(self.USDT_BTC_list) - 1].append(0.0)
-                    self.USDT_BTC_list[len(self.USDT_BTC_list) - 1].append(0.0)
-                #if (self.is_occur(self.USDT_BTC_list)):
+                    self.USDT_bb[1].append(0.0)
+                    self.USDT_bb[2].append(0.0)
+                    self.USDT_bb[3].append(0.0)                #if (self.is_occur(self.USDT_BTC_list)):
                 #    print("USDT switch occurs !", file=sys.stderr)
     def set_money(self, string) -> int:
         arr = string.split(",")
