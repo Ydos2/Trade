@@ -125,6 +125,7 @@ class Trade:
 
     def append_candles(self, string):
         arr = string.split(";")
+        self.buy = [0, 0, 0]
         for i in arr:
             info = i.split(",")
             # if (info[self._format["pair"]] == "BTC_ETH"):
@@ -183,17 +184,24 @@ class Trade:
                     self.ETH_bb[2].append(0.0)
                     self.ETH_bb[3].append(0.0)
                 if (len(self.ETH_bb[0]) > self.period):
-                    if ((self.ETH_bb[0][len(self.ETH_bb[0]) - 2] + ((self.ETH_bb[0][len(self.ETH_bb[0]) - 2] * 0.5)) > self.ETH_bb[3][len(self.ETH_bb[0]) - 2]) and (self.ETH_bb[0][len(self.ETH_bb[0]) - 1] - ((self.ETH_bb[0][len(self.ETH_bb[0]) - 1] * 0.5)) < self.ETH_bb[3][len(self.ETH_bb[0]) - 1])):
+                    prev_stock = self.ETH_bb[0][len(self.ETH_bb[0]) - 2]
+                    prev_lowerbb = self.ETH_bb[3][len(self.ETH_bb[0]) - 2]
+                    prev_upperbb = self.ETH_bb[2][len(self.ETH_bb[0]) - 2]
+                    cur_stock = self.ETH_bb[0][len(self.ETH_bb[0]) - 1]
+                    cur_lowerbb = self.ETH_bb[3][len(self.ETH_bb[0]) - 1]
+                    cur_upperbb = self.ETH_bb[2][len(self.ETH_bb[0]) - 1]
+                    print(f"PREV_STOCK = {prev_stock}\nCUR_STOCK = {cur_stock}\nPREV_UPPERBB = {prev_upperbb}\nCUR_UPPERBB = {cur_upperbb}\nPREV_LOWERBB = {prev_lowerbb}\nCUR_LOWERBB = {cur_lowerbb}", file=sys.stderr)
+                    if ((prev_stock > prev_lowerbb) and (cur_stock < cur_lowerbb)):
                         val_buy = 0.5
                         if (val_buy > self.USDT_money):
-                            self.buy[2] = self.USDT_money
+                            self.buy[1] = self.USDT_money
                         else:
-                            self.buy[2] = val_buy
-                    elif ((self.ETH_bb[0][len(self.ETH_bb[0]) - 2] - ((self.ETH_bb[0][len(self.ETH_bb[0]) - 2] * 1.0)) < self.ETH_bb[2][len(self.ETH_bb[0]) - 2]) and (self.ETH_bb[0][len(self.ETH_bb[0]) - 1] + ((self.ETH_bb[0][len(self.ETH_bb[0]) - 1] * 1.0)) > self.ETH_bb[2][len(self.ETH_bb[0]) - 1])):
-                        self.buy[1] = -self.ETH_money
+                            self.buy[1] = val_buy
+                    elif ((prev_stock < prev_upperbb) and (cur_stock > cur_upperbb)):
+                        if self.ETH_money != 0:
+                            self.buy[1] = -self.ETH_money
                     else:
                         self.buy[1] = 0
-                        self.buy[2] = 0
             #     # if (self.is_occur(self.USDT_ETH_list)):
             #     #    print("ETH switch occurs !", file=sys.stderr)
             # if (info[self._format["pair"]] == "USDT_BTC"):
@@ -254,40 +262,38 @@ class Trade:
                 return 84
         return 0
 
-    def go_buy(self, name_money: str, money_actu: int, hasBought: bool, type_money: int) -> bool:
+    def go_buy(self, name_money: str, money_actu: int, money_sell: int, hasBought: bool, type_money: int) -> bool:
         if (money_actu >= self.buy[type_money] and self.buy[type_money] > 0.001):
             if (hasBought):
                 print(";", end='')
             print("buy " + name_money + " " +
                   str(self.buy[type_money]), end='')
-            print("should buy !", file=sys.stderr)
+            print(f"should buy {name_money}", file=sys.stderr)
             self.buy[type_money] = 0
             return (True)
-        elif (self.buy[type_money] < 0):
+        elif (self.buy[type_money] < 0 and money_sell >= -self.buy[type_money]):
+            print(f"should sell {money_sell} and {self.buy[type_money]}", file=sys.stderr)
             if (hasBought):
                 print(";", end='')
-            print(f"LOLLLLL {str(-self.buy[type_money])}", file=sys.stderr)
             print("sell " + name_money + " " +
                   str(-self.buy[type_money]), end='')
-            print("should sell !", file=sys.stderr)
+            print(f"should sell {name_money}", file=sys.stderr)
             self.buy[type_money] = 0
             return (True)
         return (False)
 
     def set_action(self, milliseconds):
         isBuy = False
-        if (self.go_buy("USDT_ETH", self.USDT_money, False, 0) == True):
+        if (self.go_buy("BTC_ETH", self.BTC_money, self.BTC_money, False, 0) == True):
             isBuy = True
-        if (self.go_buy("BTC_ETH", self.BTC_money, isBuy, 1) == True):
+        elif (self.go_buy("USDT_ETH", self.USDT_money, self.ETH_money, isBuy, 1) == True):
             isBuy = True
-        if (self.go_buy("USDT_BTC", self.USDT_money, isBuy, 2) == True):
+        elif (self.go_buy("USDT_BTC", self.USDT_money, self.BTC_money, isBuy, 2) == True):
             isBuy = True
         if (isBuy):
             print("")
-            print("Buy today !", file=sys.stderr)
         else:
             print("pass")
-            print("Pass to another day !", file=sys.stderr)
 
     def set_buy(self, action: list):
         if (action[0] > 6):
@@ -320,7 +326,6 @@ class Trade:
             except:
                 return 84
             training_list = input_list.split(" ")
-            print("Command : " + input_list, file=sys.stderr)
             if (training_list[0] == "update" and training_list[1] == "game" and training_list[2] == "next_candles"):
                 self.append_candles(training_list[3])
                 # if index > 4:
