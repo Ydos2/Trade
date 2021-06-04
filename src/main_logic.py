@@ -29,24 +29,8 @@ class Trade:
     BTC_ETH_list = [[]]
     USDT_ETH_list = [[]]
     USDT_BTC_list = [[]]
-
-    # BTC_ETH[0] = volumes
-    # BTC_ETH[1] = SMA
-    # BTC_ETH[2] = upper_bb
-    # BTC_ETH[3] = lower_bb
-    BTC_ETH = [[], [], [], []]
-
-    # USDT_ETH[0] = volumes
-    # USDT_ETH[1] = SMA
-    # USDT_ETH[2] = upper_bb
-    # USDT_ETH[3] = lower_bb
-    USDT_ETH = [[], [], [], []]
-
-    # USDT_BTC[0] = volumes
-    # USDT_BTC[1] = SMA
-    # USDT_BTC[2] = upper_bb
-    # USDT_BTC[3] = lower_bb
-    USDT_BTC = [[], [], [], []]
+    closeList = []
+    openList = []
 
     buy = [0, 0, 0]
 
@@ -102,41 +86,41 @@ class Trade:
         self.set_format()
         return 0
 
-    def last_relative_evolution(self, tab):
-        val = ((tab[len(tab) - 2][5] - tab[len(tab) - 2 - self.period][5]) /
-               tab[len(tab) - 2 - self.period][5]) * 100
-        return val
+    # def last_relative_evolution(self, tab):
+    #     val = ((tab[len(tab) - 2][5] - tab[len(tab) - 2 - self.period][5]) /
+    #            tab[len(tab) - 2 - self.period][5]) * 100
+    #     return val
 
-    def actual_relative_evolution(self, tab):
-        val = ((tab[len(tab) - 1][5] - tab[len(tab) - 1 - self.period][5]) /
-               tab[len(tab) - 1 - self.period][5]) * 100
-        return val
+    # def actual_relative_evolution(self, tab):
+    #     val = ((tab[len(tab) - 1][5] - tab[len(tab) - 1 - self.period][5]) /
+    #            tab[len(tab) - 1 - self.period][5]) * 100
+    #     return val
 
-    def is_occur(self, tab):
-        if (len(tab) < self.period + 3):
-            return 0
-        if (tab[len(tab) - 1 - self.period][5] == 0 or tab[len(tab) - 2 - self.period][5] == 0):
-            return 0
-        x = self.actual_relative_evolution(tab)
-        y = self.last_relative_evolution(tab)
-        if ((x >= 0 and y < 0) or (x < 0 and y >= 0)):
-            return 1
-        return 0
+    # def is_occur(self, tab):
+    #     if (len(tab) < self.period + 3):
+    #         return 0
+    #     if (tab[len(tab) - 1 - self.period][5] == 0 or tab[len(tab) - 2 - self.period][5] == 0):
+    #         return 0
+    #     x = self.actual_relative_evolution(tab)
+    #     y = self.last_relative_evolution(tab)
+    #     if ((x >= 0 and y < 0) or (x < 0 and y >= 0)):
+    #         return 1
+    #     return 0
 
     def append_candles(self, string):
         arr = string.split(";")
         self.buy = [0, 0, 0]
         for i in arr:
             info = i.split(",")
-            # if (info[self._format["pair"]] == "BTC_ETH"):
-            #     self.BTC_ETH_list.append([
-            #         float(info[self._format["date"]]),
-            #         float(info[self._format["high"]]),
-            #         float(info[self._format["low"]]),
-            #         float(info[self._format["open"]]),
-            #         float(info[self._format["close"]]),
-            #         float(info[self._format["volume"]])
-            #     ])
+            if (info[self._format["pair"]] == "BTC_ETH"):
+                self.BTC_ETH_list.append([
+                    float(info[self._format["date"]]),
+                    float(info[self._format["high"]]),
+                    float(info[self._format["low"]]),
+                    float(info[self._format["open"]]),
+                    float(info[self._format["close"]]),
+                    float(info[self._format["volume"]])
+                ])
             #     self.BTC_ETH[0].append(float(info[self._format["volume"]]))
             #     if (len(self.BTC_ETH[0]) > self.period):
             #         self.BTC_ETH[1].append(sma(self.BTC_ETH[0], self.period))
@@ -172,74 +156,15 @@ class Trade:
                     float(info[self._format["close"]]),
                     float(info[self._format["volume"]])
                 ])
-                self.USDT_ETH[0].append(float(info[self._format["volume"]]))
-                if (len(self.USDT_ETH[0]) > self.period):
-                    self.USDT_ETH[1].append(sma(self.USDT_ETH[0], self.period))
-                    self.USDT_ETH[2].append(
-                        upper_bb(self.USDT_ETH[0], self.USDT_ETH[1][len(self.USDT_ETH[1]) - 1], self.period))
-                    self.USDT_ETH[3].append(
-                        lower_bb(self.USDT_ETH[0], self.USDT_ETH[1][len(self.USDT_ETH[1]) - 1], self.period))
-                else:
-                    self.USDT_ETH[1].append(0.0)
-                    self.USDT_ETH[2].append(0.0)
-                    self.USDT_ETH[3].append(0.0)
-                if (len(self.USDT_ETH[0]) > self.period):
-                    prev_stock = self.USDT_ETH[0][len(self.USDT_ETH[0]) - 2]
-                    prev_lowerbb = self.USDT_ETH[3][len(self.USDT_ETH[0]) - 2]
-                    prev_upperbb = self.USDT_ETH[2][len(self.USDT_ETH[0]) - 2]
-                    cur_stock = self.USDT_ETH[0][len(self.USDT_ETH[0]) - 1]
-                    cur_lowerbb = self.USDT_ETH[3][len(self.USDT_ETH[0]) - 1]
-                    cur_upperbb = self.USDT_ETH[2][len(self.USDT_ETH[0]) - 1]
-                    print(f"PREV_STOCK = {prev_stock}\nCUR_STOCK = {cur_stock}\nPREV_UPPERBB = {prev_upperbb}\nCUR_UPPERBB = {cur_upperbb}\nPREV_LOWERBB = {prev_lowerbb}\nCUR_LOWERBB = {cur_lowerbb}", file=sys.stderr)
-                    if ((prev_stock > prev_lowerbb) and (cur_stock < cur_lowerbb)):
-                        val_buy = 0.5
-                        if (val_buy > self.USDT_money):
-                            self.buy[1] = self.USDT_money
-                        else:
-                            self.buy[1] = val_buy
-                    elif ((prev_stock < prev_upperbb) and (cur_stock > cur_upperbb)):
-                        if self.ETH_money != 0:
-                            self.buy[1] = -self.ETH_money
-                    else:
-                        self.buy[1] = 0
-            #     # if (self.is_occur(self.USDT_ETH_list)):
-            #     #    print("ETH switch occurs !", file=sys.stderr)
-            # if (info[self._format["pair"]] == "USDT_BTC"):
-            #     self.USDT_BTC_list.append([
-            #         float(info[self._format["date"]]),
-            #         float(info[self._format["high"]]),
-            #         float(info[self._format["low"]]),
-            #         float(info[self._format["open"]]),
-            #         float(info[self._format["close"]]),
-            #         float(info[self._format["volume"]])
-            #     ])
-            #     self.USDT_BTC[0].append(float(info[self._format["volume"]]))
-            #     if (len(self.USDT_BTC[0]) > self.period):
-            #         self.USDT_BTC[1].append(sma(self.USDT_BTC[0], self.period))
-            #         self.USDT_BTC[2].append(upper_bb(
-            #             self.USDT_BTC[0], self.USDT_BTC[1][len(self.USDT_BTC[1]) - 1], self.period))
-            #         self.USDT_BTC[3].append(lower_bb(
-            #             self.USDT_BTC[0], self.USDT_BTC[1][len(self.USDT_BTC[1]) - 1], self.period))
-            #     else:
-            #         self.USDT_BTC[1].append(0.0)
-            #         self.USDT_BTC[2].append(0.0)
-            #         # if (self.is_occur(self.USDT_BTC_list)):
-            #         self.USDT_BTC[3].append(0.0)
-            #     #    print("USDT switch occurs !", file=sys.stderr)
-
-            #     if (len(self.USDT_BTC[0]) > self.period):
-            #         if ((self.USDT_BTC[0][len(self.USDT_BTC[0]) - 2] + (self.USDT_BTC[0][len(self.USDT_BTC[0]) - 2] * 0.2)  > self.USDT_BTC[3][len(self.USDT_BTC[0]) - 2]) and (self.USDT_BTC[0][len(self.USDT_BTC[0]) - 1] - (self.USDT_BTC[0][len(self.USDT_BTC[0]) - 2] * 0.2) < self.USDT_BTC[3][len(self.USDT_BTC[0]) - 1])):
-            #             val_buy = 0.5
-            #             if (val_buy > self.USDT_money):
-            #                 self.buy[2] = self.USDT_money
-            #             else:
-            #                 self.buy[2] = val_buy
-            #             #self.BTC_stock += 0.5
-            #         elif ((self.USDT_BTC[0][len(self.USDT_BTC[0]) - 2]  + (self.USDT_BTC[0][len(self.USDT_BTC[0]) - 2] * 0.2) < self.USDT_BTC[2][len(self.USDT_BTC[0]) - 2]) and (self.USDT_BTC[0][len(self.USDT_BTC[0]) - 1] - (self.USDT_BTC[0][len(self.USDT_BTC[0]) - 2] * 0.2) > self.USDT_BTC[2][len(self.USDT_BTC[0]) - 1])):
-            #             self.buy[0] = -self.BTC_money
-            #         else:
-            #             self.buy[0] = 0
-            #             self.buy[2] = 0
+            if (info[self._format["pair"]] == "USDT_BTC"):
+                self.USDT_BTC_list.append([
+                    float(info[self._format["date"]]),
+                    float(info[self._format["high"]]),
+                    float(info[self._format["low"]]),
+                    float(info[self._format["open"]]),
+                    float(info[self._format["close"]]),
+                    float(info[self._format["volume"]])
+                ])
 
     def set_money(self, string) -> int:
         arr = string.split(",")
@@ -250,7 +175,6 @@ class Trade:
             info = i.split(":")
             if (len(info) != 2):
                 return 84
-            # print(info[0], float(info[1]), file=sys.stderr)
             if (info[0] == "BTC"):
                 self.BTC_money = float(info[1])
             elif (info[0] == "ETH"):
@@ -263,30 +187,55 @@ class Trade:
         return 0
 
     def go_buy(self, name_money, money_actu, money_sell, money_list, hasBought, type_money) -> bool:
-        if (money_actu >= self.buy[type_money] and self.buy[type_money] > 0.001):
+        for i in range(0, len(money_list)):
+            self.closeList.append(money_list[i]["close"])
+        last = self.closeList[len(self.closeList) - 1]
+        sma = sma(self.closeList, self.period)
+        up = upper_bb(self.closeList, sma, self.period)
+        low = lower_bb(self.closeList, sma, self.period)
+        buy = ((low - last) / 10) * money_actu
+        sell = ((last - up) / 10) * money_sell
+        if (last < low and money_actu > buy and buy > 0.001):
             if (hasBought):
                 print(";", end='')
-            print("buy " + name_money + " " +
-                  str(self.buy[type_money]), end='')
-            print(f"should buy {name_money}", file=sys.stderr)
-            self.buy[type_money] = 0
-            return (True)
-        elif (self.buy[type_money] < 0 and money_sell >= -self.buy[type_money]):
-            print(f"should sell {money_sell} and {self.buy[type_money]}", file=sys.stderr)
+            print("buy " + name_money + " " + str(buy), end='')
+            self.closeList.clear()
+            return True
+        elif (last > up and money_sell > sell and sell > 0.001):
             if (hasBought):
                 print(";", end='')
-            print("sell " + name_money + " " +
-                  str(-self.buy[type_money]), end='')
-            print(f"should sell {name_money}", file=sys.stderr)
-            self.buy[type_money] = 0
-            return (True)
-        return (False)
+            print("should sell", file=sys.stderr)
+            print("sell " + name_money + " " + str(sell), end='')
+            self.closeList.clear()
+            return True
+        self.closeList.clear()
+        return False
+        # if (money_actu >= self.buy[type_money] and self.buy[type_money] > 0.001):
+        #     if (hasBought):
+        #         print(";", end='')
+        #     print("buy " + name_money + " " +
+        #           str(self.buy[type_money]), end='')
+        #     print(f"should buy {name_money}", file=sys.stderr)
+        #     self.buy[type_money] = 0
+        #     self.closeList.clear()
+        #     return (True)
+        # elif (self.buy[type_money] < 0 and money_sell >= -self.buy[type_money]):
+        #     print(f"should sell {money_sell} and {self.buy[type_money]}", file=sys.stderr)
+        #     if (hasBought):
+        #         print(";", end='')
+        #     print("sell " + name_money + " " + str(-self.buy[type_money]), end='')
+        #     print(f"should sell {name_money}", file=sys.stderr)
+        #     self.buy[type_money] = 0
+        #     self.closeList.clear()
+        #     return (True)
+        # self.closeList.clear()
+        # return (False)
 
     def set_action(self, milliseconds):
         isBuy = False
-        if (self.go_buy("BTC_ETH", self.BTC_money, self.ETH_money, self.BTC_ETH_list, isBuy, 0)):
+        if (self.go_buy("USDT_ETH", self.USDT_money, self.ETH_money, self.USDT_ETH_list, False, 1)):
             isBuy = True
-        elif (self.go_buy("USDT_ETH", self.USDT_money, self.ETH_money, self.USDT_ETH_list, False, 1)):
+        elif (self.go_buy("BTC_ETH", self.BTC_money, self.ETH_money, self.BTC_ETH_list, isBuy, 0)):
             isBuy = True
         elif (self.go_buy("USDT_BTC", self.USDT_money, self.BTC_money, self.USDT_BTC_list, isBuy, 2)):
             isBuy = True
@@ -328,10 +277,6 @@ class Trade:
             training_list = input_list.split(" ")
             if (training_list[0] == "update" and training_list[1] == "game" and training_list[2] == "next_candles"):
                 self.append_candles(training_list[3])
-                # if index > 4:
-                    # action = candlestick_class.candlestick_japanese(
-                    #     self.BTC_ETH_list, self.USDT_ETH_list, self.USDT_BTC_list)
-                    # self.set_buy(action)
             elif (training_list[0] == "update" and training_list[1] == "game" and training_list[2] == "stacks"):
                 if (self.set_money(training_list[3]) == 84):
                     print("Error in sey money !", file=sys.stderr)
