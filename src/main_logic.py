@@ -20,6 +20,7 @@ class Trade:
     initial_stack = 0
     candle_format = ""
     transaction_fee_percent = 0
+    period = 50
 
     _format = {}
     BTC_money = 0
