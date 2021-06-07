@@ -1,15 +1,14 @@
-import requests
 import math
 import sys
-#import numpy as np
 
 def sma(tab, n):
     cpt = 0.0
-
-    for i in range (len(tab) - n, len(tab)):
-        cpt += tab[i]
-    cpt /= n
-    return cpt
+    j = 0
+    mean_list = tab[-n:]
+    for i in range (0, len(mean_list)):
+        cpt += mean_list[i]
+        j += 1
+    return cpt / j
 
 def upper_bb(tab, sma, n):
     bb = sma + (standard_deviation(tab, n) * 2)
