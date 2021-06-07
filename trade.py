@@ -8,10 +8,7 @@ from utils import usage, error_handling
 from src import main_logic
 
 def main() -> int:
-    #if usage.check_args(sys.argv) == 84:
-    #    return 84
-    #periodNbr = sys.argv[1]
-    #error_handling.check_period(periodNbr)
+    usage.usage()
     try:
         obj = main_logic.Trade()
         if obj.start() == 84:
