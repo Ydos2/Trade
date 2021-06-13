@@ -1,5 +1,4 @@
 import math
-import sys
 
 def sma(tab, n):
     cpt = 0.0

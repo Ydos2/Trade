@@ -1,5 +1,3 @@
-import math
-import statistics
 import sys
 
 from .candlestick_japanese import candlestick
@@ -22,7 +20,7 @@ class Trade:
     transaction_fee_percent = 0
     period = 50
 
-    _format = {}
+    format = {}
     BTC_money = 0
     ETH_money = 0
     USDT_money = 0
@@ -58,7 +56,7 @@ class Trade:
         for i in self.candle_format:
             for j in candle_list:
                 if i == j:
-                    self._format[j] = good_val
+                    self.format[j] = good_val
                     good_val = good_val + 1
                     candle_list.remove(j)
         if (good_val != 7):
@@ -85,40 +83,40 @@ class Trade:
         self.set_format()
         return 0
 
-    def append_candles(self, string):
+    def append_candles(self, string) -> None:
         arr = string.split(";")
         self.buy = [0, 0, 0]
         for i in arr:
             info = i.split(",")
-            if (info[self._format["pair"]] == "BTC_ETH"):
+            if (info[self.format["pair"]] == "BTC_ETH"):
                 self.BTC_ETH_list.append([
-                    float(info[self._format["date"]]),
-                    float(info[self._format["high"]]),
-                    float(info[self._format["low"]]),
-                    float(info[self._format["open"]]),
-                    float(info[self._format["close"]]),
-                    float(info[self._format["volume"]])
+                    float(info[self.format["date"]]),
+                    float(info[self.format["high"]]),
+                    float(info[self.format["low"]]),
+                    float(info[self.format["open"]]),
+                    float(info[self.format["close"]]),
+                    float(info[self.format["volume"]])
                 ])
-            if (info[self._format["pair"]] == "USDT_ETH"):
+            if (info[self.format["pair"]] == "USDT_ETH"):
                 self.USDT_ETH_list.append([
-                    float(info[self._format["date"]]),
-                    float(info[self._format["high"]]),
-                    float(info[self._format["low"]]),
-                    float(info[self._format["open"]]),
-                    float(info[self._format["close"]]),
-                    float(info[self._format["volume"]])
+                    float(info[self.format["date"]]),
+                    float(info[self.format["high"]]),
+                    float(info[self.format["low"]]),
+                    float(info[self.format["open"]]),
+                    float(info[self.format["close"]]),
+                    float(info[self.format["volume"]])
                 ])
-            if (info[self._format["pair"]] == "USDT_BTC"):
+            if (info[self.format["pair"]] == "USDT_BTC"):
                 self.USDT_BTC_list.append([
-                    float(info[self._format["date"]]),
-                    float(info[self._format["high"]]),
-                    float(info[self._format["low"]]),
-                    float(info[self._format["open"]]),
-                    float(info[self._format["close"]]),
-                    float(info[self._format["volume"]])
+                    float(info[self.format["date"]]),
+                    float(info[self.format["high"]]),
+                    float(info[self.format["low"]]),
+                    float(info[self.format["open"]]),
+                    float(info[self.format["close"]]),
+                    float(info[self.format["volume"]])
                 ])
 
-    def set_money(self, string) -> int:
+    def set_money(self, string: str) -> int:
         arr = string.split(",")
         if (len(arr) != 3):
             print("Wrong value : " + string, file=sys.stderr)
@@ -138,7 +136,7 @@ class Trade:
                 return 84
         return 0
 
-    def go_buy(self, name_money, money_actu, money_sell, money_list, hasBought, type_money) -> bool:
+    def go_buy(self, name_money: str, money_actu: float, money_sell: float, money_list: list, hasBought: bool) -> bool:
         for i in range(1, len(money_list)):
             self.closeList.append(money_list[i][4])
         last = self.closeList[len(self.closeList) - 1]
@@ -147,11 +145,12 @@ class Trade:
         low = lower_bb(self.closeList, sma_val, self.period)
         buy = ((low - last) / 10) * money_actu
         sell = ((last - up) / 10) * money_sell
+
         if (last < low and money_actu > buy and buy > 0.0005):
             if (hasBought):
                 print(";", end='')
             if (buy > money_sell):
-                buy = 0.5
+                buy = money_actu
             print("buy " + name_money + " " + str(buy), end='')
             self.closeList.clear()
             return True
@@ -159,7 +158,7 @@ class Trade:
             if (hasBought):
                 print(";", end='')
             if (sell > money_actu):
-                sell = 0.5
+                sell = money_sell
             print("should sell", file=sys.stderr)
             print("sell " + name_money + " " + str(sell), end='')
             self.closeList.clear()
@@ -167,13 +166,13 @@ class Trade:
         self.closeList.clear()
         return False
 
-    def set_action(self, milliseconds):
+    def set_action(self, milliseconds: float) -> None:
         isBuy = False
-        if (self.go_buy("USDT_ETH", self.USDT_money / self.USDT_ETH_list[-2][4], self.ETH_money, self.USDT_ETH_list, False, 1)):
+        if (self.go_buy("USDT_ETH", self.USDT_money / self.USDT_ETH_list[-2][4], self.ETH_money, self.USDT_ETH_list, False)):
             isBuy = True
-        elif (self.go_buy("BTC_ETH", self.BTC_money / self.BTC_ETH_list[-2][4], self.ETH_money, self.BTC_ETH_list, isBuy, 0)):
+        elif (self.go_buy("BTC_ETH", self.BTC_money / self.BTC_ETH_list[-2][4], self.ETH_money, self.BTC_ETH_list, isBuy)):
             isBuy = True
-        elif (self.go_buy("USDT_BTC", self.USDT_money / self.USDT_BTC_list[-2][4], self.BTC_money, self.USDT_BTC_list, isBuy, 2)):
+        elif (self.go_buy("USDT_BTC", self.USDT_money / self.USDT_BTC_list[-2][4], self.BTC_money, self.USDT_BTC_list, isBuy)):
             isBuy = True
         if (isBuy):
             print("")
