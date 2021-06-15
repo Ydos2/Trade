@@ -149,7 +149,7 @@ class Trade:
         if (last < low and money_actu > buy and buy > 0.0005):
             if (hasBought):
                 print(";", end='')
-            if (buy > money_sell):
+            if (buy > money_actu):
                 buy = money_actu
             print("buy " + name_money + " " + str(buy), end='')
             self.closeList.clear()
@@ -157,7 +157,7 @@ class Trade:
         elif (last > up and money_sell > sell and sell > 0.4):
             if (hasBought):
                 print(";", end='')
-            if (sell > money_actu):
+            if (sell > money_sell):
                 sell = money_sell
             print("should sell", file=sys.stderr)
             print("sell " + name_money + " " + str(sell), end='')
